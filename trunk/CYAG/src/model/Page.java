@@ -68,7 +68,8 @@ public class Page
 	public void constructPage(int id, String folder)
 	{
 		//set the file, instantice Linked Lists
-		pageData = new File(folder+id+".xml");
+		pageData = new File(folder+File.separator+id+".xml");
+		
 		choices = new LinkedList<Link>();
 		
 		try
@@ -449,5 +450,10 @@ public class Page
 		}
 		
 		return null;
+	}
+	
+	public void setFolder(String folder)
+	{
+		pageData = new File(folder+File.separator+id+".xml");
 	}
 }

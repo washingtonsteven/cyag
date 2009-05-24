@@ -92,10 +92,6 @@ public class Tree
 		{
 			e.printStackTrace();
 		}
-		
-
-		System.err.println("Tree written to: "+getFolder());
-
 	}
 	
 	/**
@@ -323,5 +319,28 @@ public class Tree
 	public File getFile()
 	{
 		return treeData;
+	}
+	
+	public boolean saveAs(String folder)
+	{
+		LinkedList<Page> pages  = getPages();
+		
+		Iterator<Page> iter = pages.iterator();
+		
+		while (iter.hasNext())
+		{
+			Page p = iter.next();
+			p.setFolder(folder);
+			p.save();
+		}
+		
+		File f = new File(folder+File.separator+"tree.xml");
+		
+		treeData = f;
+		writeTree();
+			
+
+		
+		return true;
 	}
 }
