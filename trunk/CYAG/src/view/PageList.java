@@ -342,7 +342,7 @@ public class PageList extends javax.swing.JFrame {
 	private JTextArea getAboutText() {
 		if(aboutText == null) {
 			aboutText = new JTextArea();
-			aboutText.setText("Version 0.5.0\n\nThanks for trying this out! \nPlease help out this application and send me any feedback you have.\n\n\nWritten by Steven Washington\nEmail: washington.steven@gmail.com\n\nCopyright © 2009 by Steven Washington. All Rights Reserved.\n\nGUI created with Jigloo.\nSite: http://www.cloudgarden.com/jigloo/\n\nJigloo is Copyright © 2004-2007 by Cloud Garden.com. \nAll Rights Reserved.\n\n");
+			aboutText.setText("Version 0.6.1a\n\nThanks for trying this out! \nPlease help out this application and send me any feedback you have.\n\n\nWritten by Steven Washington\nEmail: washington.steven@gmail.com\n\nCopyright © 2009 by Steven Washington. All Rights Reserved.\n\nGUI created with Jigloo.\nSite: http://www.cloudgarden.com/jigloo/\n\nJigloo is Copyright © 2004-2007 by Cloud Garden.com. \nAll Rights Reserved.\n\n");
 			aboutText.setBackground(new java.awt.Color(244,244,244));
 			aboutText.setFont(new java.awt.Font("Tahoma",0,11));
 			aboutText.setPreferredSize(new java.awt.Dimension(370, 266));
