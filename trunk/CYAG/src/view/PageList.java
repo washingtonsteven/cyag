@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -13,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -31,6 +33,11 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 import model.Link;
 import model.Page;
@@ -63,17 +70,24 @@ public class PageList extends javax.swing.JFrame {
 	}
 
 	private JList pageList;
+	private JFileChooser fc;
 	private AbstractAction aboutAction;
-	private JMenuItem jMenuItem1;
 	private AbstractAction deleteAction;
 	private AbstractAction createAction;
 	private AbstractAction editAction;
 	private JSeparator buttonPanelSeparator;
 	private JTextArea pageInfoText;
 	private JButton createButton;
-	private JMenuItem helpItem;
 	private JMenu aboutMenu;
 	private JTextArea aboutText;
+	private JMenuItem jMenuItem1;
+	private JLabel statusLabel;
+	private AbstractAction saveAction;
+	private JMenuItem saveItem;
+	private AbstractAction saveAdventureAction;
+	private JMenuItem saveAdvitem;
+	private AbstractAction openTreeAction;
+	private JMenuItem openAdvItem;
 	private AbstractAction exitAction;
 	private JMenuItem jMenuItem2;
 	private AbstractAction okAction;
@@ -121,18 +135,16 @@ public class PageList extends javax.swing.JFrame {
 					fileMenu = new JMenu();
 					mainmenu.add(fileMenu);
 					fileMenu.setText("File");
+					fileMenu.add(getOpenAdvItem());
+					fileMenu.add(getSaveItem());
+					fileMenu.add(getSaveAdvitem());
 					fileMenu.add(getJMenuItem2());
 				}
 				{
 					aboutMenu = new JMenu();
 					mainmenu.add(aboutMenu);
-					aboutMenu.setText("About");
-					{
-						helpItem = new JMenuItem();
-						aboutMenu.add(helpItem);
-						aboutMenu.add(getJMenuItem1());
-						helpItem.setText("Help");
-					}
+					aboutMenu.setText("Help");
+					aboutMenu.add(getJMenuItem1());
 				}
 			}
 			{
@@ -188,6 +200,7 @@ public class PageList extends javax.swing.JFrame {
 					new DefaultComboBoxModel(tree.getPages().toArray());
 				pageList = new JList();
 				getContentPane().add(pageList, BorderLayout.CENTER);
+				getContentPane().add(getStatusLabel(), BorderLayout.SOUTH);
 				pageList.setModel(pageListModel);
 				pageList.setPreferredSize(new java.awt.Dimension(462, 245));
 				pageList.setFont(new java.awt.Font("Courier New",0,12));
@@ -215,10 +228,12 @@ public class PageList extends javax.swing.JFrame {
 						JOptionPane.showMessageDialog(null, "Illegal Selection. Please select a Page.");
 						return;
 					}
-					int page = pageList.getSelectedIndex() + 1;
-					EditPageView inst = new EditPageView(page, pageList);
+					int page = pageList.getSelectedIndex();
+					Page p = tree.getPages().get(page);
+					EditPageView inst = new EditPageView(p, pageList, tree);
 					inst.setLocationRelativeTo(null);
 					inst.setVisible(true);
+					statusLabel.setText("Page edited: Page "+p.getId());
 				}
 			};
 		}
@@ -233,15 +248,13 @@ public class PageList extends javax.swing.JFrame {
 				public void actionPerformed(ActionEvent evt) {
 					Page p = null;
 					if (tree.getPages().isEmpty())
-						p = new Page(1);
+						p = new Page(1, tree.getFolder());
 					else
-						p = new Page(tree.getPages().get(tree.getPages().size()-1).getId() + 1);
-					tree.addToTree(p);
-					tree.writeTree();
-					EditPageView inst = new EditPageView(p, pageList);
+						p = new Page(tree.getPages().get(tree.getPages().size()-1).getId() + 1, tree.getFolder());
+					EditPageView inst = new EditPageView(p, pageList, tree);
 					inst.setLocationRelativeTo(null);
 					inst.setVisible(true);
-					pageList.setListData(tree.getPages().toArray());
+					statusLabel.setText("New Page created: Page "+p.getId());
 				}
 			};
 		}
@@ -254,11 +267,13 @@ public class PageList extends javax.swing.JFrame {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent evt) {
-					
-					int toRemove = pageList.getSelectedIndex()+1;
-					if (toRemove <= 0 || toRemove > tree.getPages().size()) 
+					if (pageList.getSelectedIndex() < 0 || pageList.getSelectedIndex() > tree.getPages().size()) 
+					{
 						JOptionPane.showMessageDialog(null, "Illegal Selection. Please select a Page.");
-					
+						return;
+					}
+					int toRemove = tree.getPages().get(pageList.getSelectedIndex()).getId();
+						
 					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete Page "+toRemove+"?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 					
 					if (n != 0) return;
@@ -284,21 +299,13 @@ public class PageList extends javax.swing.JFrame {
 					
 					tree.removeFromTree(toRemove);
 					pageList.setListData(tree.getPages().toArray());
+					statusLabel.setText("Deleted Page: Page "+toRemove);
 				}
 			};
 		}
 		return deleteAction;
 	}
-	
-	private JMenuItem getJMenuItem1() {
-		if(jMenuItem1 == null) {
-			jMenuItem1 = new JMenuItem();
-			jMenuItem1.setText("jMenuItem1");
-			jMenuItem1.setAction(getAboutAction());
-		}
-		return jMenuItem1;
-	}
-	
+
 	private AbstractAction getAboutAction() {
 		if(aboutAction == null) {
 			aboutAction = new AbstractAction("About", null) {
@@ -389,6 +396,146 @@ public class PageList extends javax.swing.JFrame {
 		}
 		return exitAction;
 	}
+	
+	private JMenuItem getOpenAdvItem() {
+		if(openAdvItem == null) {
+			openAdvItem = new JMenuItem();
+			openAdvItem.setText("openAdvItem");
+			openAdvItem.setAction(getOpenTreeAction());
+		}
+		return openAdvItem;
+	}
+	
+	private AbstractAction getOpenTreeAction() {
+		if(openTreeAction == null) {
+			openTreeAction = new AbstractAction("Open Adventure...", null) {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent evt) {
+					
+					fc = new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+					fc.setAcceptAllFileFilterUsed(false);
+					fc.addChoosableFileFilter(new TreeFileFilter());
+					int returnVal = fc.showOpenDialog(frame);
+
+			            if (returnVal == JFileChooser.APPROVE_OPTION) {
+			                File file = fc.getSelectedFile();
+			                
+			                try
+			                {
+				                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				                DocumentBuilder db = dbf.newDocumentBuilder();
+				                Document doc = db.parse(file);
+				                
+				                String rootTag = doc.getDocumentElement().getTagName();
+				                
+				                if (!rootTag.equals("tree"))
+				                {
+				                	JOptionPane.showMessageDialog(null, file.getName()+" is an invalid adventure file");
+				                	return;
+				                }
+			                } catch (Exception e)
+			                {
+			                	e. printStackTrace();
+			                }
+			                
+			                tree = new Tree(file.getAbsolutePath());
+			                pageList.setListData(tree.getPages().toArray());
+			                statusLabel.setText("Adventure opened: "+tree.getFile().getAbsolutePath());
+			            } else {
+			            	JOptionPane.showMessageDialog(null, "Open Cancelled");
+			            }
+				}
+			};
+		}
+		return openTreeAction;
+	}
+	
+	private JMenuItem getSaveAdvitem() {
+		if(saveAdvitem == null) {
+			saveAdvitem = new JMenuItem();
+			saveAdvitem.setText("saveAdvitem");
+			saveAdvitem.setAction(getSaveAdventureAction());
+		}
+		return saveAdvitem;
+	}
+	
+	private AbstractAction getSaveAdventureAction() {
+		if(saveAdventureAction == null) {
+			saveAdventureAction = new AbstractAction("Save Current Adventure As...", null) {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent evt) {
+					fc = new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					fc.setAcceptAllFileFilterUsed(false);
+					fc.addChoosableFileFilter(new TreeFileFilter());
+					int returnVal = fc.showSaveDialog(frame);
+
+			            if (returnVal == JFileChooser.APPROVE_OPTION) {
+			                File file = fc.getSelectedFile();
+			                
+			                if (!file.isDirectory())
+			                {
+			                	JOptionPane.showMessageDialog(null, "Please select a directory.");
+			                	return;
+			                }
+			                
+			                tree = new Tree(file.getAbsolutePath()+File.separator+"tree.xml");
+			                
+			                pageList.setListData(tree.getPages().toArray());
+			                statusLabel.setText("Adventure saved to: "+tree.getFile().getAbsolutePath());
+			            } else {
+			            	JOptionPane.showMessageDialog(null, "Save Cancelled");
+			            }
+					
+				}
+			};
+		}
+		return saveAdventureAction;
+	}
+	
+	private JMenuItem getSaveItem() {
+		if(saveItem == null) {
+			saveItem = new JMenuItem();
+			saveItem.setText("saveItem");
+			saveItem.setAction(getSaveAction());
+		}
+		return saveItem;
+	}
+	
+	private AbstractAction getSaveAction() {
+		if(saveAction == null) {
+			saveAction = new AbstractAction("Save Adventure", null) {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent evt) {
+					tree.writeTree();
+					statusLabel.setText("Adventure saved to: "+tree.getFile().getAbsolutePath());
+				}
+			};
+		}
+		return saveAction;
+	}
+	
+	private JLabel getStatusLabel() {
+		if(statusLabel == null) {
+			statusLabel = new JLabel();
+			statusLabel.setText("Welcome!");
+			statusLabel.setFont(new java.awt.Font("Segoe UI",0,10));
+			statusLabel.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
+		}
+		return statusLabel;
+	}
+	
+	private JMenuItem getJMenuItem1() {
+		if(jMenuItem1 == null) {
+			jMenuItem1 = new JMenuItem();
+			jMenuItem1.setAction(getAboutAction());
+		}
+		return jMenuItem1;
+	}
 
 	class PageListSelectionHandler implements ListSelectionListener
 	{
@@ -435,6 +582,28 @@ public class PageList extends javax.swing.JFrame {
 			}
 			
 			pageInfoText.setText(info);
+		}
+		
+	}
+	
+	class TreeFileFilter extends FileFilter
+	{
+
+		@Override
+		public boolean accept(File f)
+		{
+			if (f.isDirectory()) return true;
+			
+			String fileName = f.getAbsolutePath();
+			String ext = fileName.substring(fileName.length()-4, fileName.length());
+			
+			return ext.equals(".xml");
+		}
+
+		@Override
+		public String getDescription()
+		{
+			return ".XML Files";
 		}
 		
 	}

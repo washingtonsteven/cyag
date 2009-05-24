@@ -35,6 +35,7 @@ public class Page
 	private DocumentBuilderFactory dbf;
 	private DocumentBuilder db;
 	private Document doc;
+	File pageData;
 	
 	public Page(int id, String text, String title)
 	{
@@ -49,17 +50,17 @@ public class Page
 		if (overwrite)
 			(new File(id+".xml")).delete();
 		
-		constructPage(id);
+		constructPage(id,"");
 	}
 	
-	public Page (int id)
+	public Page (int id, String folder)
 	{
-		constructPage(id);
+		constructPage(id, folder);
 	}
 	
-	public void constructPage(int id)
+	public void constructPage(int id, String folder)
 	{
-		File f = new File(id+".xml");
+		pageData = new File(folder+id+".xml");
 		choices = new LinkedList<Link>();
 		
 		try
@@ -67,9 +68,9 @@ public class Page
 			dbf = DocumentBuilderFactory.newInstance();
 			db = dbf.newDocumentBuilder();
 			
-			if (f.exists())
+			if (pageData.exists())
 			{
-				doc = db.parse(id+".xml");
+				doc = db.parse(pageData);
 				Element root = doc.getDocumentElement();
 				NodeList nodes = root.getChildNodes();
 				int nodeLength = nodes.getLength();
@@ -296,7 +297,7 @@ public class Page
 		Transformer trans = tf.newTransformer(); 
 
 		Source src = new DOMSource(doc); 
-		Result dest = new StreamResult(new FileWriter(new File(id+".xml"))); 
+		Result dest = new StreamResult(new FileWriter(pageData)); 
 		trans.transform(src, dest); 
 		
 		return true;

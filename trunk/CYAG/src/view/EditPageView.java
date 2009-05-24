@@ -89,19 +89,19 @@ public class EditPageView extends javax.swing.JFrame {
 	}
 	public EditPageView()
 	{
-		this(1, null);
+		this(1, null, null);
 	}
 	
-	public EditPageView(int id, JList list) {
-		this(new Page(id), list);
+	public EditPageView(int id, JList list, Tree tree) {
+		this(new Page(id,tree.getFolder()), list, tree);
 	}
 	
-	public EditPageView(Page p, JList list)
+	public EditPageView(Page p, JList list, Tree tree)
 	{
 		super();
 		this.pageList = list;
 		page = p;
-		tree = new Tree();
+		this.tree = tree;
 		choiceFields = new LinkedList<JTextField>();
 		comboBoxes = new LinkedList<JComboBox>();
 		initGUI();
@@ -342,6 +342,8 @@ public class EditPageView extends javax.swing.JFrame {
 			}
 			
 			page.save();
+			tree.addToTree(page);
+			tree.writeTree();
 			
 			if (parent != null && close)
 			{

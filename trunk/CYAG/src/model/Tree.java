@@ -36,7 +36,16 @@ public class Tree
 	
 	public Tree()
 	{
-		this("tree.xml");
+		this(getDefaultFile().getAbsolutePath());
+	}
+	
+	public static File getDefaultFile()
+	{
+		File f = new File("My Adventure");
+		if (!f.exists())
+			f.mkdir();
+		
+		return new File("My Adventure"+File.separator+"tree.xml");
 	}
 	
 	/**
@@ -72,7 +81,9 @@ public class Tree
 			e.printStackTrace();
 		}
 		
-		System.err.println("Tree written to: "+treeData.getAbsolutePath());
+
+		System.err.println("Tree written to: "+getFolder());
+
 	}
 	
 	/**
@@ -146,6 +157,7 @@ public class Tree
 	
 	public LinkedList<Page> getPages()
 	{
+		sortElements();
 		LinkedList<Page> pageList = new LinkedList<Page>();
 		
 		NodeList pages = doc.getElementsByTagName("page");
@@ -153,7 +165,7 @@ public class Tree
 		for (int i = 0; i < pages.getLength(); i++)
 		{
 			Element curr = (Element) (pages.item(i));
-			Page p = getPageByFile(curr.getTextContent(), Integer.parseInt(curr.getAttribute("id")));
+			Page p = getPageByFile(getFolder()+curr.getTextContent(), Integer.parseInt(curr.getAttribute("id")));
 			
 			if (p != null)
 				pageList.add(p);
@@ -187,39 +199,11 @@ public class Tree
 	
 	private Page getPageByFile(String file, int id)
 	{
-		File pageFile = new File(file);
-		Page p = new Page(id);
-		
+		File pageFile = new File(file);	
 		if (!pageFile.exists())
 			return null;
 		
-		/*try
-		{
-			Document pageDoc = db.parse(pageFile);
-			NodeList titleList = pageDoc.getElementsByTagName("title");
-			NodeList textList = pageDoc.getElementsByTagName("text");
-			NodeList choiceList = pageDoc.getElementsByTagName("choice");
-			
-			p.setTitle(titleList.item(0).getTextContent());
-			p.setText(textList.item(0).getTextContent());
-			
-			for (int i = 0; i < choiceList.getLength(); i++)
-			{
-				Element curr = (Element) choiceList.item(i);
-				
-				NodeList linkInfo = curr.getChildNodes();
-				
-				int target = Integer.parseInt(linkInfo.item(0).getTextContent());
-				String text = linkInfo.item(1).getTextContent();
-				
-				p.addChoice(new Link(target, text));
-			}
-			
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}*/
+		Page p = new Page(id, getFolder());
 		
 		return p;
 	}
@@ -248,5 +232,18 @@ public class Tree
 		}
 		
 		return parents;
+	}
+
+	public String getFolder()
+	{
+		String path = treeData.getAbsolutePath();
+		int treeIndex = path.indexOf(treeData.getName());
+		path = path.substring(0, treeIndex);
+		return path;
+	}
+
+	public File getFile()
+	{
+		return treeData;
 	}
 }
