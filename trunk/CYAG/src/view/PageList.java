@@ -211,7 +211,10 @@ public class PageList extends javax.swing.JFrame {
 
 				public void actionPerformed(ActionEvent evt) {
 					if (pageList.getSelectedIndex() < 0) 
+					{
 						JOptionPane.showMessageDialog(null, "Illegal Selection. Please select a Page.");
+						return;
+					}
 					int page = pageList.getSelectedIndex() + 1;
 					EditPageView inst = new EditPageView(page, pageList);
 					inst.setLocationRelativeTo(null);
@@ -228,7 +231,11 @@ public class PageList extends javax.swing.JFrame {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent evt) {
-					Page p = new Page(tree.getPages().get(tree.getPages().size()-1).getId() + 1);
+					Page p = null;
+					if (tree.getPages().isEmpty())
+						p = new Page(1);
+					else
+						p = new Page(tree.getPages().get(tree.getPages().size()-1).getId() + 1);
 					tree.addToTree(p);
 					tree.writeTree();
 					EditPageView inst = new EditPageView(p, pageList);
