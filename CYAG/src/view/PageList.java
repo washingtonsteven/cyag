@@ -80,12 +80,14 @@ public class PageList extends javax.swing.JFrame {
 	private JButton createButton;
 	private JMenu aboutMenu;
 	private JTextArea aboutText;
+	private AbstractAction saveAdvAs;
+	private JMenuItem saveAdvAsItem;
 	private JMenuItem jMenuItem1;
 	private JLabel statusLabel;
 	private AbstractAction saveAction;
 	private JMenuItem saveItem;
 	private AbstractAction saveAdventureAction;
-	private JMenuItem saveAdvitem;
+	private JMenuItem newAdvItem;
 	private AbstractAction openTreeAction;
 	private JMenuItem openAdvItem;
 	private AbstractAction exitAction;
@@ -135,9 +137,10 @@ public class PageList extends javax.swing.JFrame {
 					fileMenu = new JMenu();
 					mainmenu.add(fileMenu);
 					fileMenu.setText("File");
+					fileMenu.add(getNewAdvItem());
 					fileMenu.add(getOpenAdvItem());
 					fileMenu.add(getSaveItem());
-					fileMenu.add(getSaveAdvitem());
+					fileMenu.add(getSaveAdvAsItem());
 					fileMenu.add(getJMenuItem2());
 				}
 				{
@@ -342,7 +345,7 @@ public class PageList extends javax.swing.JFrame {
 	private JTextArea getAboutText() {
 		if(aboutText == null) {
 			aboutText = new JTextArea();
-			aboutText.setText("Version 0.6.1a\n\nThanks for trying this out! \nPlease help out this application and send me any feedback you have.\n\n\nWritten by Steven Washington\nEmail: washington.steven@gmail.com\n\nCopyright © 2009 by Steven Washington. All Rights Reserved.\n\nGUI created with Jigloo.\nSite: http://www.cloudgarden.com/jigloo/\n\nJigloo is Copyright © 2004-2007 by Cloud Garden.com. \nAll Rights Reserved.\n\n");
+			aboutText.setText("Version 0.6.2a\n\nThanks for trying this out! \nPlease help out this application and send me any feedback you have.\n\n\nWritten by Steven Washington\nEmail: washington.steven@gmail.com\n\nCopyright © 2009 by Steven Washington. All Rights Reserved.\n\nGUI created with Jigloo.\nSite: http://www.cloudgarden.com/jigloo/\n\nJigloo is Copyright © 2004-2007 by Cloud Garden.com. \nAll Rights Reserved.\n\n");
 			aboutText.setBackground(new java.awt.Color(244,244,244));
 			aboutText.setFont(new java.awt.Font("Tahoma",0,11));
 			aboutText.setPreferredSize(new java.awt.Dimension(370, 266));
@@ -414,13 +417,20 @@ public class PageList extends javax.swing.JFrame {
 				public void actionPerformed(ActionEvent evt) {
 					
 					fc = new JFileChooser();
-					fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					fc.setAcceptAllFileFilterUsed(false);
 					fc.addChoosableFileFilter(new TreeFileFilter());
 					int returnVal = fc.showOpenDialog(frame);
 
 			            if (returnVal == JFileChooser.APPROVE_OPTION) {
-			                File file = fc.getSelectedFile();
+			            	
+			            	if (!fc.getSelectedFile().isDirectory())
+			            	{
+			            		JOptionPane.showMessageDialog(null, "Please select a directory");
+			            		return;
+			            	}
+			            	
+			                File file = new File(fc.getSelectedFile().getAbsolutePath()+File.separator+"tree.xml");
 			                
 			                try
 			                {
@@ -452,22 +462,23 @@ public class PageList extends javax.swing.JFrame {
 		return openTreeAction;
 	}
 	
-	private JMenuItem getSaveAdvitem() {
-		if(saveAdvitem == null) {
-			saveAdvitem = new JMenuItem();
-			saveAdvitem.setText("saveAdvitem");
-			saveAdvitem.setAction(getSaveAdventureAction());
+	private JMenuItem getNewAdvItem() {
+		if(newAdvItem == null) {
+			newAdvItem = new JMenuItem();
+			newAdvItem.setText("newAdvItem");
+			newAdvItem.setAction(getSaveAdventureAction());
 		}
-		return saveAdvitem;
+		return newAdvItem;
 	}
 	
 	private AbstractAction getSaveAdventureAction() {
 		if(saveAdventureAction == null) {
-			saveAdventureAction = new AbstractAction("Save Current Adventure As...", null) {
+			saveAdventureAction = new AbstractAction("New Adventure...", null) {
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent evt) {
 					fc = new JFileChooser();
+					fc.setToolTipText("Select a Directory where the new Adventure will be saved.");
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					fc.setAcceptAllFileFilterUsed(false);
 					fc.addChoosableFileFilter(new TreeFileFilter());
@@ -485,7 +496,7 @@ public class PageList extends javax.swing.JFrame {
 			                tree = new Tree(file.getAbsolutePath()+File.separator+"tree.xml");
 			                
 			                pageList.setListData(tree.getPages().toArray());
-			                statusLabel.setText("Adventure saved to: "+tree.getFile().getAbsolutePath());
+			                statusLabel.setText("New adventure created: "+tree.getFile().getAbsolutePath());
 			            } else {
 			            	JOptionPane.showMessageDialog(null, "Save Cancelled");
 			            }
@@ -535,6 +546,52 @@ public class PageList extends javax.swing.JFrame {
 			jMenuItem1.setAction(getAboutAction());
 		}
 		return jMenuItem1;
+	}
+	
+	private JMenuItem getSaveAdvAsItem() {
+		if(saveAdvAsItem == null) {
+			saveAdvAsItem = new JMenuItem();
+			saveAdvAsItem.setText("saveAdvAsItem");
+			saveAdvAsItem.setAction(getSaveAdvAs());
+		}
+		return saveAdvAsItem;
+	}
+	
+	private AbstractAction getSaveAdvAs() {
+		if(saveAdvAs == null) {
+			saveAdvAs = new AbstractAction("Save Adventure As...", null) {
+	
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent evt) {
+					fc = new JFileChooser();
+					fc.setToolTipText("Select a Directory where the Adventure will be saved.");
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					fc.setAcceptAllFileFilterUsed(false);
+					fc.addChoosableFileFilter(new TreeFileFilter());
+					int returnVal = fc.showSaveDialog(frame);
+
+			            if (returnVal == JFileChooser.APPROVE_OPTION) {
+			                File file = fc.getSelectedFile();
+			                
+			                if (!file.isDirectory())
+			                {
+			                	JOptionPane.showMessageDialog(null, "Please select a directory.");
+			                	return;
+			                }
+			                
+			                tree.saveAs(file.getAbsolutePath());
+			                
+			                pageList.setListData(tree.getPages().toArray());
+			                statusLabel.setText("Adventure saved as: "+tree.getFile().getAbsolutePath());
+			            } else {
+			            	JOptionPane.showMessageDialog(null, "Save Cancelled");
+			            }
+					
+				}
+			};
+		}
+		return saveAdvAs;
 	}
 
 	class PageListSelectionHandler implements ListSelectionListener
@@ -603,7 +660,8 @@ public class PageList extends javax.swing.JFrame {
 		@Override
 		public String getDescription()
 		{
-			return ".XML Files";
+			
+			return "Directories";
 		}
 		
 	}

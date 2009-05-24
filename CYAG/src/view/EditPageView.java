@@ -337,7 +337,8 @@ public class EditPageView extends javax.swing.JFrame {
 					continue;
 				}
 				
-				page.addChoice(new Link(target, linktext)); 
+				if (target != 0 && linktext != null)
+					page.addChoice(new Link(target, linktext)); 
 				i++;
 			}
 			
