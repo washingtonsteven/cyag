@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -338,9 +339,22 @@ public class Tree
 		
 		treeData = f;
 		writeTree();
-			
-
 		
 		return true;
+	}
+	
+	public String parentFolderName()
+	{
+		StringTokenizer st = new StringTokenizer(getFolder(), File.separator);
+		
+		while (st.hasMoreTokens())
+		{
+			String folderName = st.nextToken();
+			
+			if (!st.hasMoreTokens())
+				return folderName;
+		}
+		
+		return getFolder();
 	}
 }
