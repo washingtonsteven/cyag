@@ -1,6 +1,5 @@
 package view;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -23,6 +22,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ListModel;
@@ -202,16 +202,17 @@ public class PageList extends javax.swing.JFrame {
 				ListModel pageListModel = 
 					new DefaultComboBoxModel(tree.getPages().toArray());
 				pageList = new JList();
-				getContentPane().add(pageList, BorderLayout.CENTER);
+				JScrollPane scrollPane = new JScrollPane(pageList);
+				scrollPane.getViewport().add(pageList);
+				getContentPane().add(scrollPane, BorderLayout.CENTER);
+				scrollPane.setBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED));
 				getContentPane().add(getStatusLabel(), BorderLayout.SOUTH);
 				pageList.setModel(pageListModel);
-				pageList.setPreferredSize(new java.awt.Dimension(462, 245));
+				//pageList.setPreferredSize(new java.awt.Dimension(383, 292));
 				pageList.setFont(new java.awt.Font("Courier New",0,12));
 				pageList.setSelectedIndex(-1);
 				pageList.getSelectionModel().addListSelectionListener(new PageListSelectionHandler());
-				pageList.setBorder(BorderFactory.createLineBorder(Color.black));
 
-				
 			}
 			pack();
 
