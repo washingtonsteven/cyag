@@ -331,7 +331,7 @@ public class EditPageView extends javax.swing.JFrame {
 				
 				if (target < 0 || linktext == null || linktext.isEmpty()) continue;
 				
-				if (target == 0 && page.getChoice(i) != null)
+				if (target == 0)
 				{
 					page.removeChoice(page.getChoice(i));
 					continue;

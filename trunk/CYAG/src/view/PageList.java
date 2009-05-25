@@ -127,7 +127,7 @@ public class PageList extends javax.swing.JFrame {
 	private void initGUI() {
 		try {
 			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			this.setTitle("Choose Your Own Adventure Creation Tool :: List of Pages");
+			this.setTitle("Choose Your Own Adventure Creation Tool :: List of Pages :: "+tree.parentFolderName());
 			this.setResizable(false);
 			this.setVisible(false);
 			{
@@ -453,6 +453,7 @@ public class PageList extends javax.swing.JFrame {
 			                tree = new Tree(file.getAbsolutePath());
 			                pageList.setListData(tree.getPages().toArray());
 			                statusLabel.setText("Adventure opened: "+tree.getFile().getAbsolutePath());
+			                frame.setTitle("Choose Your Own Adventure Creation Tool :: List of Pages :: "+tree.parentFolderName());
 			            } else {
 			            	JOptionPane.showMessageDialog(null, "Open Cancelled");
 			            }
@@ -497,8 +498,9 @@ public class PageList extends javax.swing.JFrame {
 			                
 			                pageList.setListData(tree.getPages().toArray());
 			                statusLabel.setText("New adventure created: "+tree.getFile().getAbsolutePath());
+			                frame.setTitle("Choose Your Own Adventure Creation Tool :: List of Pages :: "+tree.parentFolderName());
 			            } else {
-			            	JOptionPane.showMessageDialog(null, "Save Cancelled");
+			            	JOptionPane.showMessageDialog(null, "Create Cancelled");
 			            }
 					
 				}
@@ -584,6 +586,7 @@ public class PageList extends javax.swing.JFrame {
 			                
 			                pageList.setListData(tree.getPages().toArray());
 			                statusLabel.setText("Adventure saved as: "+tree.getFile().getAbsolutePath());
+			                frame.setTitle("Choose Your Own Adventure Creation Tool :: List of Pages :: "+tree.parentFolderName());
 			            } else {
 			            	JOptionPane.showMessageDialog(null, "Save Cancelled");
 			            }
