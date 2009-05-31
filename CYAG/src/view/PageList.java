@@ -63,7 +63,7 @@ public class PageList extends javax.swing.JFrame {
 	{
 		//Set Look & Feel
 		try {
-			javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -432,6 +432,11 @@ public class PageList extends javax.swing.JFrame {
 			            	}
 			            	
 			                File file = new File(fc.getSelectedFile().getAbsolutePath()+File.separator+"tree.xml");
+			                if (!file.exists())
+			                {
+			                	JOptionPane.showMessageDialog(null, "Not a valid Directory.\nPlease choose one that contains \"tree.xml\"");
+			                	return;
+			                }
 			                
 			                try
 			                {

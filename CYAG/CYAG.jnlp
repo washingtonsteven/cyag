@@ -1,0 +1,17 @@
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jnlp spec="0.2 1.0"
+      codebase="http://cyag.googlecode.com/files/">
+     <information>
+       <title>Choose Your Adventure Tool</title>
+       <vendor>Steve Washington</vendor>
+       <description>Tool for exporting organized .xml files containing data about a "Choose Your Adventure" story.</description>
+     </information>
+     <offline-allowed />
+     <security> 
+  		<all-permissions />
+	</security>  
+     <resources>
+       <jar href="CYAG-0.6.2a.jar" main="true" download="eager"/>
+     </resources>
+     <application-desc main-class="view.PageList"/>
+   </jnlp>
