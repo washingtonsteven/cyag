@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 
@@ -78,6 +77,7 @@ public class EditPageView extends javax.swing.JFrame {
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
+	/*
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -86,7 +86,7 @@ public class EditPageView extends javax.swing.JFrame {
 				inst.setVisible(true);
 			}
 		});
-	}
+	}*/
 	public EditPageView()
 	{
 		this(1, null, null);

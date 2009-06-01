@@ -13,5 +13,5 @@
      <resources>
        <jar href="CYAG-0.6.2a.jar" main="true" download="eager"/>
      </resources>
-     <application-desc main-class="view.PageList"/>
+     <application-desc main-class="StartCYAG"/>
    </jnlp>
