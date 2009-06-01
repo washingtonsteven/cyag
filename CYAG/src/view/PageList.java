@@ -351,6 +351,8 @@ public class PageList extends javax.swing.JFrame {
 			aboutText.setFont(new java.awt.Font("Tahoma",0,11));
 			aboutText.setPreferredSize(new java.awt.Dimension(370, 266));
 			aboutText.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(BevelBorder.LOWERED), "Choose Your Adventure Tool", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma",1,14)));
+			aboutText.setEditable(false);
+			aboutText.setFocusable(false);
 		}
 		return aboutText;
 	}
